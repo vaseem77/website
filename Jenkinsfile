@@ -3,13 +3,6 @@ pipeline {
 
     stages {
 
-        stage('Clone Repository') {
-            steps {
-                git branch: "${env.BRANCH_NAME}",
-                    url: 'https://github.com/hshar/website.git'
-            }
-        }
-
         stage('Build Docker Image') {
             steps {
                 sh '''
