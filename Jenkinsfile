@@ -1,49 +1,30 @@
 pipeline {
     agent any
-
     stages {
-
-        stage('Build Docker Image') {
+        stage('Job1: Build') {
             steps {
-                sh '''
-                    docker build -t mywebsite:latest .
-                '''
+                echo "JOB 1 : BUILD"
+                sh 'docker build -t abodesoftware:latest .'
             }
         }
-
-        stage('Publish - Master Branch') {
-            when {
-                branch 'master'
-            }
+        stage('Job2: Test') {
             steps {
-                sh '''
-                    docker rm -f website-master || true
-                    docker run -d \
-                        --name website-master \
-                        -p 82:80 \
-                        -v $(pwd):/var/www/html \
-                        mywebsite:latest
-                    echo "Website published at port 82"
-                '''
+                sh 'docker rm -f test_container || true'
+                sh 'docker run -d --name test_container -p 8181:80 abodesoftware:latest'
+                sh 'sleep 5'
+                sh 'curl -f http://localhost:8181 && echo TEST PASSED || echo TEST FAILED'
+            }
+            post {
+                always { sh 'docker rm -f test_container || true' }
             }
         }
-
-        stage('Build Only - Develop Branch') {
-            when {
-                branch 'develop'
-            }
+        stage('Job3: Prod') {
+            when { branch 'master' }
             steps {
-                echo 'Develop branch: Image built. Not publishing.'
+                sh 'docker rm -f prod_container || true'
+                sh 'docker run -d --name prod_container --restart always -p 80:80 abodesoftware:latest'
+                echo "Deployed to prod"
             }
-        }
-    }
-
-    post {
-        success {
-            echo 'Pipeline completed successfully!'
-        }
-        failure {
-            echo 'Pipeline failed. Check the logs.'
         }
     }
 }
