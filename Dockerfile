@@ -1,3 +1,2 @@
 FROM hshar/webapp
-COPY . /var/www/html/
-EXPOSE 80
+COPY . /var/www/html
