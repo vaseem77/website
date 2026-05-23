@@ -35,7 +35,7 @@ pipeline {
                 echo '=== DEPLOYING TO PRODUCTION ==='
                 sh '''
                     docker rm -f prod-container 2>/dev/null || true
-                    docker run -d --name prod-container -p 80:80 ${IMAGE_NAME}:latest
+                    docker run -d --name prod-container -p 8181:80 ${IMAGE_NAME}:latest
                     echo "PRODUCTION DEPLOYED"
                 '''
             }
