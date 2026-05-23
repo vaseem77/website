@@ -22,7 +22,7 @@ pipeline {
             when { branch 'master' }
             steps {
                 sh 'docker rm -f prod_container || true'
-                sh 'docker run -d --name prod_container --restart always -p 80:80 abodesoftware:latest'
+                sh 'docker run -d --name prod-container -p 8181:80 ${IMAGE_NAME}:latest'
                 echo "Deployed to prod"
             }
         }
